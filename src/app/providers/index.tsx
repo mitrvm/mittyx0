@@ -1,4 +1,3 @@
-import '~shared/main.css';
 import { withErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '~pages/main';
 import { withSuspense } from '~shared/lib/react';

@@ -10,7 +10,7 @@ export const pathKeys = {
     },
     guide: {
         root() {
-            return 'https://ygk.re-vizor.com/static/ygk-rukovodstvo-dispetchera.pdf';
+            return 'https://abc';
         },
     },
 };

@@ -18,15 +18,9 @@ function BubbleError() {
 const router = createBrowserRouter([
     {
         errorElement: <BubbleError />,
-        element: (<>
-        </>),
+        element: <NakedLayout />,
         children: [
-            {
-                element: <NakedLayout/>,
-                children: [
-                    mainPageRoute,
-                ],
-            },
+            mainPageRoute,
             {
                 loader: async () => redirect(pathKeys.home.root()),
                 path: '*',
