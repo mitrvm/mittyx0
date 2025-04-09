@@ -10,7 +10,9 @@ export default ({ mode }) => {
     ...(mode !== 'test' && {
       plugins: [
         react(),
-        eslint(),
+        eslint({
+          include: ['src/**/*.ts', 'src/**/*.tsx'],
+        }),
         checker({ typescript: true }),
         ClosePlugin(),
       ],

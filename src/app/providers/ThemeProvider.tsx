@@ -6,12 +6,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const defaultTheme = createTheme();
 
-export function MUIThemeProvider({ children }:{ children:ReactNode }) {
-    return (
+export function MUIThemeProvider({ children }: { children: ReactNode }) {
+  return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <ThemeProvider theme={defaultTheme}>
-                {children}
-        </ThemeProvider>
+      <ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>
     </LocalizationProvider>
-    );
+  );
 }

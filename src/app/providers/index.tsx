@@ -1,17 +1,18 @@
 import { withErrorBoundary } from 'react-error-boundary';
-import { ErrorFallback } from '~pages/main';
+import { ErrorFallback } from '~pages/dashboard';
 import { withSuspense } from '~shared/lib/react';
 import { BrowserRouter } from './RouterProvider';
 import { MUIThemeProvider } from './ThemeProvider';
 import { JSX } from 'react';
 import React from 'react';
+// import '../../i18n.js';
 
 export default function App(): JSX.Element {
   return (
     <React.StrictMode>
-          <MUIThemeProvider>
-              <BrowserRouter />
-          </MUIThemeProvider>
+      <MUIThemeProvider>
+        <BrowserRouter />
+      </MUIThemeProvider>
     </React.StrictMode>
   );
 }
