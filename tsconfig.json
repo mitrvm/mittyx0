@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
 
     "strict": true,
     "allowJs": true,
@@ -25,18 +21,27 @@
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
-      
       "~app": ["./app"],
       "~app/*": ["./app/*"],
 
       "~pages": ["./pages"],
       "~pages/*": ["./pages/*"],
-      
+
       "~shared": ["./shared"],
       "~shared/*": ["./shared/*"],
+
+      "~widgets": ["./widgets"],
+      "~widgets/*": ["./widgets/*"],
+
+      "~features": ["./features"],
+      "~features/*": ["./features/*"],
+
+      "~entities": ["./entities"],
+      "~entities/*": ["./entities/*"],
+
+      "~constants": ["./constants"],
+      "~constants/*": ["./constants/*"]
     }
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

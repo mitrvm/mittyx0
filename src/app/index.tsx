@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { Provider } from './providers';
-import '@fontsource/inter/500.css';
+import '../i18n';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <Provider />,
+  <Provider />,
 );

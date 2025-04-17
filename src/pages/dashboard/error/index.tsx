@@ -3,7 +3,7 @@ function ErrorFallback() {
     window.location.href = '/';
   };
   return (
-    <div 
+    <div
       style={{
         display: 'flex',
         justifyContent: 'center',
@@ -14,7 +14,9 @@ function ErrorFallback() {
       <div>
         <h1>500</h1>
         <p>Что-то пошло не так...</p>
-        <button onClick={() => redirectHome()}>Вернуться на главную</button>
+        <button type="button" onClick={() => redirectHome()}>
+          Вернуться на главную
+        </button>
       </div>
     </div>
   );
