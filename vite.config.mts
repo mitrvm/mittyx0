@@ -21,6 +21,7 @@ export default ({ mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
+      copyPublicDir: true,
     },
     server: { host: false },
     preview: { open: true },
