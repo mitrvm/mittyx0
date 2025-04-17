@@ -17,6 +17,7 @@ export default ({ mode }) => {
         ClosePlugin(),
       ],
     }),
+    base: '/wip/',
     server: { host: false },
     preview: { open: true },
     resolve: {
