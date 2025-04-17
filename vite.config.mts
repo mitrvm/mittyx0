@@ -18,6 +18,10 @@ export default ({ mode }) => {
       ],
     }),
     base: '/wip/',
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+    },
     server: { host: false },
     preview: { open: true },
     resolve: {
