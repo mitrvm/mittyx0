@@ -31,7 +31,16 @@
       "~shared/*": ["./shared/*"],
 
       "~widgets": ["./widgets"],
-      "~widgets/*": ["./widgets/*"]
+      "~widgets/*": ["./widgets/*"],
+
+      "~features": ["./features"],
+      "~features/*": ["./features/*"],
+
+      "~entities": ["./entities"],
+      "~entities/*": ["./entities/*"],
+
+      "~constants": ["./constants"],
+      "~constants/*": ["./constants/*"]
     }
   },
   "include": ["src"]

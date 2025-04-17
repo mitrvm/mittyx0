@@ -5,13 +5,16 @@ import { BrowserRouter } from './RouterProvider';
 import { MUIThemeProvider } from './ThemeProvider';
 import { JSX } from 'react';
 import React from 'react';
+import { AntDesignProvider } from './AntDesignProvider';
 // import '../../i18n.js';
 
 export default function App(): JSX.Element {
   return (
     <React.StrictMode>
       <MUIThemeProvider>
-        <BrowserRouter />
+        <AntDesignProvider>
+          <BrowserRouter />
+        </AntDesignProvider>
       </MUIThemeProvider>
     </React.StrictMode>
   );

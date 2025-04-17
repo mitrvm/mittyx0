@@ -1,13 +1,10 @@
 import { Layout } from 'antd';
-import { Header } from '~widgets/header';
+import { Sidebar } from '~widgets/sidebar';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const layoutStyle = {
-    padding: 6,
-  };
   return (
-    <Layout style={layoutStyle}>
-      <Header />
+    <Layout>
+      <Sidebar />
       {children}
     </Layout>
   );
@@ -18,12 +15,9 @@ export function DashboardLayoutSidebar({
 }: {
   children: React.ReactNode;
 }) {
-  const layoutStyle = {
-    padding: 6,
-  };
   return (
-    <Layout style={layoutStyle}>
-      <Header />
+    <Layout>
+      <Sidebar />
       {children}
     </Layout>
   );
