@@ -1,6 +1,6 @@
 import {
   RouterProvider,
-  createHashRouter,
+  createBrowserRouter,
   redirect,
   useRouteError,
 } from 'react-router-dom';
@@ -15,7 +15,7 @@ function BubbleError() {
   return null;
 }
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     errorElement: <BubbleError />,
     element: <NakedLayout />,
