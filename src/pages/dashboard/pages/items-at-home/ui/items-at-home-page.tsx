@@ -1,15 +1,13 @@
 import { DashboardLayoutSidebar } from '~pages/dashboard/ui';
-import { GroceryListWidget } from '~widgets';
 import styled from 'styled-components';
 import { useSidebar } from '~entities/contexts/sidebar-context';
+import { GroceryListWidget } from '~widgets/grocery-list';
 
 const MainContent = styled.div<{ $isCollapsed: boolean }>`
   padding: 24px;
   min-height: 100vh;
   background-color: inherit;
   transition: margin-left 0.3s;
-
-  // On mobile, always overlay
   margin-left: 60px;
   width: calc(100% - 60px);
 
@@ -21,13 +19,16 @@ const MainContent = styled.div<{ $isCollapsed: boolean }>`
   }
 `;
 
-export function MainPage() {
+export function ItemsAtHomePage() {
   const { isCollapsed } = useSidebar();
 
   return (
     <DashboardLayoutSidebar>
       <MainContent $isCollapsed={isCollapsed}>
-        <GroceryListWidget />
+        <div>
+          <h1>Items at Home</h1>
+          <GroceryListWidget />
+        </div>
       </MainContent>
     </DashboardLayoutSidebar>
   );

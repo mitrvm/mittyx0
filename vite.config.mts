@@ -23,7 +23,16 @@ export default ({ mode }) => {
       assetsDir: 'assets',
       copyPublicDir: true,
     },
-    server: { host: false },
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://192.168.0.4:8080',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
+
     preview: { open: true },
     resolve: {
       alias: {

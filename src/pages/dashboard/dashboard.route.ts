@@ -1,6 +1,11 @@
 import { type RouteObject, redirect } from 'react-router-dom';
 import { pathKeys } from '~shared/lib/react-router';
-import { mainPageRoute } from './pages';
+import {
+  itemsAtHomePageRoute,
+  mainPageRoute,
+  statsPageRoute,
+  tagsAndCategoriesPageRoute,
+} from './pages';
 
 export const dashboardPageRoute: RouteObject = {
   path: pathKeys.dashboard.root(),
@@ -10,7 +15,12 @@ export const dashboardPageRoute: RouteObject = {
       loader: async () => redirect(pathKeys.dashboard.home.root()),
     },
     {
-      children: [mainPageRoute],
+      children: [
+        mainPageRoute,
+        itemsAtHomePageRoute,
+        statsPageRoute,
+        tagsAndCategoriesPageRoute,
+      ],
     },
   ],
 };

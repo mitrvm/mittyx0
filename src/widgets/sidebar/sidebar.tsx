@@ -1,5 +1,5 @@
 import { Layout, Menu, Flex, Switch, Button } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { pathKeys } from '~shared/lib/react-router';
 import {
   MoonFilled,
@@ -8,12 +8,11 @@ import {
   MenuUnfoldOutlined,
   ShoppingCartOutlined,
   ContainerOutlined,
-  AppstoreOutlined,
   TagsOutlined,
   BarChartOutlined,
 } from '@ant-design/icons';
 import { useTheme } from '~entities/contexts/theme-context';
-import { useState, useEffect } from 'react';
+import { useSidebar } from '~entities/contexts/sidebar-context';
 
 const { Sider } = Layout;
 
@@ -34,11 +33,12 @@ const { Sider } = Layout;
 // };
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const { isDarkTheme, toggleTheme } = useTheme();
+  const location = useLocation();
 
   const siderStyle: React.CSSProperties = {
-    backgroundColor: isDarkTheme ? 'black' : 'white',
+    backgroundColor: isDarkTheme ? '#141414' : 'white',
     borderRadius: 6,
     height: '100vh',
     position: 'fixed',
@@ -47,22 +47,23 @@ export function Sidebar() {
     zIndex: 1000,
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setCollapsed(window.innerWidth < 768);
-    };
+  const getMenuItemStyle = (path: string) => ({
+    backgroundColor: location.pathname === path ? '#67a654' : undefined,
+  });
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+  const getLinkStyle = (path: string) => ({
+    color: location.pathname === path ? 'white' : undefined,
+  });
 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const getIconStyle = (path: string) => ({
+    color: location.pathname === path ? 'white' : undefined,
+  });
 
   return (
     <Sider
       style={siderStyle}
       width={200}
-      collapsed={collapsed}
+      collapsed={isCollapsed}
       collapsible
       trigger={null}
       collapsedWidth={60}
@@ -71,8 +72,8 @@ export function Sidebar() {
         <div>
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
+            icon={isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setIsCollapsed(!isCollapsed)}
             style={{
               margin: '16px',
               fontSize: '16px',
@@ -92,34 +93,64 @@ export function Sidebar() {
           >
             <Menu.Item
               key="0"
-              style={{ backgroundColor: '#67a654' }}
-              icon={<ShoppingCartOutlined style={{ color: 'white' }} />}
+              style={getMenuItemStyle(pathKeys.dashboard.home.root())}
+              icon={
+                <ShoppingCartOutlined
+                  style={getIconStyle(pathKeys.dashboard.home.root())}
+                />
+              }
             >
               <Link
                 rel="noopener"
                 to={pathKeys.dashboard.home.root()}
-                style={{ color: 'white' }}
+                style={getLinkStyle(pathKeys.dashboard.home.root())}
               >
                 Список покупок
               </Link>
             </Menu.Item>
-            <Menu.Item key="1" icon={<ContainerOutlined />}>
-              <Link rel="noopener" to={pathKeys.dashboard.home.root()}>
+            <Menu.Item
+              key="1"
+              style={getMenuItemStyle(pathKeys.dashboard.itemsAtHome.root())}
+              icon={
+                <ContainerOutlined
+                  style={getIconStyle(pathKeys.dashboard.itemsAtHome.root())}
+                />
+              }
+            >
+              <Link
+                rel="noopener"
+                to={pathKeys.dashboard.itemsAtHome.root()}
+                style={getLinkStyle(pathKeys.dashboard.itemsAtHome.root())}
+              >
                 Холодильник
               </Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<AppstoreOutlined />}>
-              <Link rel="noopener" to={pathKeys.dashboard.home.root()}>
-                Категории
+            <Menu.Item
+              key="2"
+              style={getMenuItemStyle(
+                pathKeys.dashboard.tagsAndCategories.root(),
+              )}
+              icon={
+                <TagsOutlined
+                  style={getIconStyle(
+                    pathKeys.dashboard.tagsAndCategories.root(),
+                  )}
+                />
+              }
+            >
+              <Link
+                rel="noopener"
+                to={pathKeys.dashboard.tagsAndCategories.root()}
+              >
+                Тэги, Категории
               </Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<TagsOutlined />}>
-              <Link rel="noopener" to={pathKeys.dashboard.home.root()}>
-                Тэги
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="4" icon={<BarChartOutlined />}>
-              <Link rel="noopener" to={pathKeys.dashboard.home.root()}>
+            <Menu.Item
+              key="3"
+              style={getMenuItemStyle(pathKeys.dashboard.stats.root())}
+              icon={<BarChartOutlined />}
+            >
+              <Link rel="noopener" to={pathKeys.dashboard.stats.root()}>
                 Статистика
               </Link>
             </Menu.Item>
@@ -134,13 +165,13 @@ export function Sidebar() {
           gap="8"
         >
           <Switch
-            style={{ minWidth: collapsed ? '40px' : '70px' }}
+            style={{ minWidth: isCollapsed ? '40px' : '70px' }}
             checked={isDarkTheme}
             onChange={toggleTheme}
             checkedChildren={<SunFilled />}
             unCheckedChildren={<MoonFilled />}
           />
-          {!collapsed && (
+          {!isCollapsed && (
             <div style={{ color: 'gray', fontSize: '12px' }}>
               by mittyx0(front) & nipl(back)
             </div>

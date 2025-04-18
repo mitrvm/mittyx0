@@ -6,15 +6,21 @@ import { MUIThemeProvider } from './ThemeProvider';
 import { JSX } from 'react';
 import React from 'react';
 import { AntDesignProvider } from './AntDesignProvider';
+import { SidebarProvider } from './SidebarProvider';
+import { ToastProvider } from './ToastProvider';
 // import '../../i18n.js';
 
 export default function App(): JSX.Element {
   return (
     <React.StrictMode>
       <MUIThemeProvider>
-        <AntDesignProvider>
-          <BrowserRouter />
-        </AntDesignProvider>
+        <ToastProvider>
+          <AntDesignProvider>
+            <SidebarProvider>
+              <BrowserRouter />
+            </SidebarProvider>
+          </AntDesignProvider>
+        </ToastProvider>
       </MUIThemeProvider>
     </React.StrictMode>
   );

@@ -1,5 +1,4 @@
 import { DashboardLayoutSidebar } from '~pages/dashboard/ui';
-import { GroceryListWidget } from '~widgets';
 import styled from 'styled-components';
 import { useSidebar } from '~entities/contexts/sidebar-context';
 
@@ -8,8 +7,6 @@ const MainContent = styled.div<{ $isCollapsed: boolean }>`
   min-height: 100vh;
   background-color: inherit;
   transition: margin-left 0.3s;
-
-  // On mobile, always overlay
   margin-left: 60px;
   width: calc(100% - 60px);
 
@@ -21,13 +18,15 @@ const MainContent = styled.div<{ $isCollapsed: boolean }>`
   }
 `;
 
-export function MainPage() {
+export function TagsAndCategoriesPage() {
   const { isCollapsed } = useSidebar();
 
   return (
     <DashboardLayoutSidebar>
       <MainContent $isCollapsed={isCollapsed}>
-        <GroceryListWidget />
+        <div>
+          <h1>Tags and categories</h1>
+        </div>
       </MainContent>
     </DashboardLayoutSidebar>
   );

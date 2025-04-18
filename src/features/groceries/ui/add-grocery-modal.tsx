@@ -1,31 +1,50 @@
 import { Modal, Form, Input, Select, Button } from 'antd';
+import { toast } from 'react-hot-toast';
+import { useGroceries } from '~entities/groceries/groceries.queries';
 
 interface AddGroceryFormData {
   name: string;
-  category: string;
-  tags: string[];
+  category: number;
+  tags: number[];
 }
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: AddGroceryFormData) => void;
 }
 
-const categories = ['Молочные продукты', 'Фрукты', 'Овощи', 'Мясо', 'Снеки'];
-const availableTags = ['Еженедельно', 'Завтрак', 'Вкусно', 'Здорово'];
+const categories = [
+  { id: 1, name: 'Молочные продукты' },
+  { id: 2, name: 'Фрукты' },
+  { id: 3, name: 'Овощи' },
+  { id: 4, name: 'Мясо' },
+  { id: 5, name: 'Снеки' },
+];
 
-export function AddGroceryModal({ isOpen, onClose, onAdd }: Props) {
+const availableTags = [
+  { id: 1, name: 'Еженедельно' },
+  { id: 2, name: 'Завтрак' },
+  { id: 3, name: 'Вкусно' },
+  { id: 4, name: 'Здорово' },
+];
+
+export function AddGroceryModal({ isOpen, onClose }: Props) {
   const [form] = Form.useForm<AddGroceryFormData>();
+  const { createGrocery } = useGroceries();
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      onAdd(values);
+      await createGrocery({
+        name: values.name,
+        category_id: values.category,
+        tags_id: values.tags,
+      });
+      toast.success('Вроде успех!!!');
       form.resetFields();
       onClose();
     } catch (error) {
-      // Form validation error
+      toast.error('Ошибка!! :(');
     }
   };
 
@@ -59,18 +78,18 @@ export function AddGroceryModal({ isOpen, onClose, onAdd }: Props) {
         >
           <Select placeholder="Выберите категорию">
             {categories.map((category) => (
-              <Select.Option key={category} value={category}>
-                {category}
+              <Select.Option key={category.id} value={category.id}>
+                {category.name}
               </Select.Option>
             ))}
           </Select>
         </Form.Item>
 
         <Form.Item name="tags" label="Теги">
-          <Select mode="multiple" placeholder="Выберите теги" allowClear>
+          <Select placeholder="Выберите теги" allowClear mode="multiple">
             {availableTags.map((tag) => (
-              <Select.Option key={tag} value={tag}>
-                {tag}
+              <Select.Option key={tag.id} value={tag.id}>
+                {tag.name}
               </Select.Option>
             ))}
           </Select>

@@ -9,6 +9,21 @@ export const pathKeys = {
         return pathKeys.dashboard.root().concat('home/');
       },
     },
+    itemsAtHome: {
+      root() {
+        return pathKeys.dashboard.root().concat('items-at-home/');
+      },
+    },
+    tagsAndCategories: {
+      root() {
+        return pathKeys.dashboard.root().concat('tags-and-categories/');
+      },
+    },
+    stats: {
+      root() {
+        return pathKeys.dashboard.root().concat('stats/');
+      },
+    },
   },
   page404() {
     return pathKeys.root.concat('404/');

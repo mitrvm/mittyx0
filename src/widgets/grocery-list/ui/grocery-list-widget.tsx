@@ -1,139 +1,168 @@
-import { List, Button } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useState, useCallback } from 'react';
+import { List, Button, Flex, Spin } from 'antd';
+import {
+  CarryOutOutlined,
+  PlusOutlined,
+  SelectOutlined,
+} from '@ant-design/icons';
+import { useState, useCallback, useEffect } from 'react';
 import { GroceryListItem } from '~features/groceries';
 import { AddGroceryModal } from '~features/groceries';
+import { useGroceries } from '~entities/groceries';
+import { SearchName, SelectCategory, SelectTags } from '~features';
+import styled from 'styled-components';
 
-interface GroceryItem {
-  id: number;
-  name: string;
-  category: string;
-  bought: boolean;
-  tags: Array<{ name: string }>;
-}
-
-const mockGroceries: GroceryItem[] = [
-  {
-    id: 1,
-    name: 'Молоко',
-    category: 'Молочные продукты',
-    bought: false,
-    tags: [{ name: 'Вкусно' }, { name: 'Ежедневное' }],
-  },
-  {
-    id: 2,
-    name: 'Яйца',
-    category: 'Молочные продукты',
-    bought: false,
-    tags: [{ name: 'Завтрак' }],
-  },
-  {
-    id: 3,
-    name: 'Яблоки',
-    category: 'Фрукты',
-    bought: false,
-    tags: [],
-  },
-  {
-    id: 4,
-    name: 'Хрустик экстра острый!!',
-    category: 'Снеки',
-    bought: false,
-    tags: [],
-  },
-];
+const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
 
 export function GroceryListWidget() {
-  const [groceries, setGroceries] = useState(mockGroceries);
+  const {
+    groceries,
+    isLoading,
+    error,
+    fetchGroceries,
+    updateGroceryStatus,
+    removeCheckedGroceries,
+  } = useGroceries();
   const [removingItems, setRemovingItems] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const handleCheckboxChange = (id: number) => {
-    setGroceries((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, bought: !item.bought } : item,
-      ),
-    );
-  };
-
   const handleRemoveChecked = useCallback(() => {
     const itemsToRemove = groceries
-      .filter((item) => item.bought)
+      .filter((item) => item.status === 'bought')
       .map((item) => item.id);
     setRemovingItems(itemsToRemove);
 
     setTimeout(() => {
-      setGroceries((prev) => prev.filter((item) => !item.bought));
+      removeCheckedGroceries();
       setRemovingItems([]);
     }, 300);
-  }, [groceries]);
+  }, [groceries, removeCheckedGroceries]);
 
-  const hasCheckedItems = groceries.some((item) => item.bought);
+  const hasCheckedItems = groceries.some((item) => item.status === 'bought');
 
-  const handleAddItem = (data: {
-    name: string;
-    category: string;
-    tags: string[];
-  }) => {
-    const newItem: GroceryItem = {
-      id: Math.max(...groceries.map((item) => item.id)) + 1,
-      name: data.name,
-      category: data.category,
-      bought: false,
-      tags: data.tags.map((name) => ({ name })),
-    };
+  useEffect(() => {
+    fetchGroceries();
+  }, []);
 
-    setGroceries((prev) => [...prev, newItem]);
+  const IconButton = styled(Button)`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    @media (max-width: 1215px) {
+      margin-top: 10px;
+    }
+    @media (max-width: 590px) {
+      .ant-btn-icon + span:not(.anticon) {
+        display: none;
+      }
+    }
+  `;
+
+  const StyledHeader = styled.div`
+    justify-content: space-between;
+    @media (max-width: 768px) {
+      justify-content: flex-end;
+    }
+  `;
+
+  const handleDelete = async () => {
+    await fetchGroceries();
   };
 
   return (
     <div style={{ maxWidth: '100%' }}>
-      <div
+      {error && (
+        <div style={{ color: 'red', marginBottom: '16px' }}>{error}</div>
+      )}
+
+      <StyledHeader
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '24px',
           flexWrap: 'wrap',
-          gap: '12px',
         }}
       >
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ backgroundColor: '#67a654' }}
-          onClick={() => setIsAddModalOpen(true)}
+        <Flex
+          style={{
+            gap: '12px',
+            flexWrap: 'wrap',
+          }}
         >
-          Добавить продукт
-        </Button>
-      </div>
+          <SearchName />
+          <SelectCategory />
+          <SelectTags />
+        </Flex>
+        <Flex style={{ gap: '12px' }}>
+          <IconButton
+            type="primary"
+            icon={<SelectOutlined />}
+            style={{ backgroundColor: '#a68454' }}
+            // onClick={() => {
+            //   toast.success('УРаааааа');
+            // }}
+          >
+            Добавить продукты (выбрать)
+          </IconButton>
+          <IconButton
+            type="primary"
+            icon={<PlusOutlined />}
+            style={{ backgroundColor: '#67a654' }}
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Добавить продукт (новый)
+          </IconButton>
+        </Flex>
+      </StyledHeader>
 
-      <List style={{ width: '100%' }}>
-        {groceries.map((item) => (
-          <GroceryListItem
-            key={item.id}
-            item={item}
-            onToggle={handleCheckboxChange}
-            isRemoving={removingItems.includes(item.id)}
-          />
-        ))}
-      </List>
+      <div style={{ position: 'relative' }}>
+        {isLoading && (
+          <LoadingOverlay>
+            <Spin size="large" />
+          </LoadingOverlay>
+        )}
+        <List style={{ width: '100%' }}>
+          {groceries.map((item) => (
+            <GroceryListItem
+              key={item.id}
+              item={item}
+              onToggle={updateGroceryStatus}
+              isRemoving={removingItems.includes(item.id)}
+              onDelete={handleDelete}
+            />
+          ))}
+        </List>
+      </div>
 
       <Button
         type="primary"
         danger
-        icon={<DeleteOutlined />}
-        onClick={handleRemoveChecked}
+        icon={<CarryOutOutlined />}
+        onClick={() => {
+          handleRemoveChecked();
+        }}
         disabled={!hasCheckedItems}
         style={{ marginTop: '16px' }}
       >
-        Удалить выбранные
+        Куплено
       </Button>
 
       <AddGroceryModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAdd={handleAddItem}
+        onClose={async () => {
+          setIsAddModalOpen(false);
+          await fetchGroceries();
+        }}
       />
     </div>
   );
