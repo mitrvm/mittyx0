@@ -1,16 +1,23 @@
 import { Modal, Form, Input, Select, Button } from 'antd';
 import { toast } from 'react-hot-toast';
 import { useGroceries } from '~entities/groceries/groceries.queries';
+import React from 'react';
 
 interface AddGroceryFormData {
+  id?: number;
   name: string;
   category: number;
   tags: number[];
+  priority: number;
 }
+
+type ModalType = 'add' | 'edit';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  type: ModalType;
+  initialData?: AddGroceryFormData;
 }
 
 const categories = [
@@ -28,19 +35,44 @@ const availableTags = [
   { id: 4, name: 'Здорово' },
 ];
 
-export function AddGroceryModal({ isOpen, onClose }: Props) {
+export function AddEditGroceryModal({
+  isOpen,
+  onClose,
+  type,
+  initialData,
+}: Props) {
   const [form] = Form.useForm<AddGroceryFormData>();
-  const { createGrocery } = useGroceries();
+  const { createGrocery, editGrocery } = useGroceries();
+
+  React.useEffect(() => {
+    if (type === 'edit' && initialData) {
+      form.setFieldsValue(initialData);
+    }
+  }, [form, type, initialData]);
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      await createGrocery({
-        name: values.name,
-        category_id: values.category,
-        tags_id: values.tags,
-      });
-      toast.success('Вроде успех!!!');
+
+      if (type === 'edit' && initialData?.id) {
+        await editGrocery({
+          id: initialData.id,
+          name: values.name,
+          category_id: values.category,
+          tags_id: values.tags,
+          priority: values.priority,
+        });
+        toast.success('Изменения сохранены.');
+      } else {
+        await createGrocery({
+          name: values.name,
+          category_id: values.category,
+          tags_id: values.tags,
+          priority: values.priority,
+        });
+        toast.success('Товар добавлен.');
+      }
+
       form.resetFields();
       onClose();
     } catch (error) {
@@ -50,7 +82,7 @@ export function AddGroceryModal({ isOpen, onClose }: Props) {
 
   return (
     <Modal
-      title="Добавить новый товар"
+      title={type === 'add' ? 'Добавить новый товар' : 'Изменить товар'}
       open={isOpen}
       onCancel={onClose}
       footer={[
@@ -58,7 +90,7 @@ export function AddGroceryModal({ isOpen, onClose }: Props) {
           Отменить
         </Button>,
         <Button key="submit" type="primary" onClick={handleSubmit}>
-          Добавить
+          {type === 'add' ? 'Добавить' : 'Изменить'}
         </Button>,
       ]}
     >
@@ -70,7 +102,6 @@ export function AddGroceryModal({ isOpen, onClose }: Props) {
         >
           <Input placeholder="Введите название товара" />
         </Form.Item>
-
         <Form.Item
           name="category"
           label="Категория"
@@ -93,6 +124,12 @@ export function AddGroceryModal({ isOpen, onClose }: Props) {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item name="priority" label="Приоритет %">
+          <Input
+            type="number"
+            placeholder="Введите необходимость товара (От 1 до 100)"
+          />
         </Form.Item>
       </Form>
     </Modal>

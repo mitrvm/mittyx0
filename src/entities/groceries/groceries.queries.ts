@@ -47,6 +47,7 @@ export function useGroceries() {
     name: string;
     category_id: number;
     tags_id: number[];
+    priority: number;
   }) => {
     try {
       const response = await fetch('/api/products', {
@@ -54,10 +55,7 @@ export function useGroceries() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          priority: 1,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -66,6 +64,33 @@ export function useGroceries() {
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to create grocery item',
+      );
+      throw err;
+    }
+  };
+
+  const editGrocery = async (data: {
+    id: number;
+    name: string;
+    category_id: number;
+    tags_id: number[];
+    priority: number;
+  }) => {
+    try {
+      const response = await fetch(`/api/products/${data.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to edit grocery item');
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to edit grocery item',
       );
       throw err;
     }
@@ -97,5 +122,6 @@ export function useGroceries() {
     removeCheckedGroceries,
     createGrocery,
     deleteGrocery,
+    editGrocery,
   };
 }

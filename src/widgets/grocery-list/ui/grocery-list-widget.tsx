@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import { useState, useCallback, useEffect } from 'react';
 import { GroceryListItem } from '~features/groceries';
-import { AddGroceryModal } from '~features/groceries';
+import { AddEditGroceryModal } from '~features/groceries';
 import { useGroceries } from '~entities/groceries';
 import { SearchName, SelectCategory, SelectTags } from '~features';
 import styled from 'styled-components';
@@ -24,6 +24,14 @@ const LoadingOverlay = styled.div`
   z-index: 1000;
 `;
 
+interface AddGroceryFormData {
+  id?: number;
+  name: string;
+  category: number;
+  tags: number[];
+  priority: number;
+}
+
 export function GroceryListWidget() {
   const {
     groceries,
@@ -35,6 +43,10 @@ export function GroceryListWidget() {
   } = useGroceries();
   const [removingItems, setRemovingItems] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<AddGroceryFormData | null>(
+    null,
+  );
 
   const handleRemoveChecked = useCallback(() => {
     const itemsToRemove = groceries
@@ -75,8 +87,19 @@ export function GroceryListWidget() {
     }
   `;
 
-  const handleDelete = async () => {
+  const handleDeleteOrEdit = async () => {
     await fetchGroceries();
+  };
+
+  const handleEditClick = (item: any) => {
+    setEditingItem({
+      id: item.id,
+      name: item.name,
+      category: item.category_id,
+      tags: item.tags.map((tag: any) => tag.id),
+      priority: item.priority,
+    });
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -138,7 +161,8 @@ export function GroceryListWidget() {
               item={item}
               onToggle={updateGroceryStatus}
               isRemoving={removingItems.includes(item.id)}
-              onDelete={handleDelete}
+              onDelete={handleDeleteOrEdit}
+              onEditClick={handleEditClick}
             />
           ))}
         </List>
@@ -156,11 +180,21 @@ export function GroceryListWidget() {
       >
         Куплено
       </Button>
-
-      <AddGroceryModal
+      <AddEditGroceryModal
+        type="add"
         isOpen={isAddModalOpen}
         onClose={async () => {
           setIsAddModalOpen(false);
+          await fetchGroceries();
+        }}
+      />
+      <AddEditGroceryModal
+        type="edit"
+        isOpen={isEditModalOpen}
+        initialData={editingItem || undefined}
+        onClose={async () => {
+          setIsEditModalOpen(false);
+          setEditingItem(null);
           await fetchGroceries();
         }}
       />

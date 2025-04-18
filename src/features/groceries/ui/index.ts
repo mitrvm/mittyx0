@@ -1,2 +1,2 @@
 export * from './grocery-list-item';
-export * from './add-grocery-modal';
+export * from './add-edit-grocery-modal';

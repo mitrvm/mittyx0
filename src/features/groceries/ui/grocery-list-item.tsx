@@ -1,5 +1,5 @@
 import { Checkbox, Tag, Typography, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useTheme } from '~entities/contexts/theme-context';
 import { useGroceries } from '~entities/groceries';
@@ -34,6 +34,7 @@ interface Props {
   onToggle: (id: number) => void;
   isRemoving: boolean;
   onDelete: () => Promise<void>;
+  onEditClick: (item: Props['item']) => void;
 }
 
 export function GroceryListItem({
@@ -41,6 +42,7 @@ export function GroceryListItem({
   onToggle,
   isRemoving,
   onDelete,
+  onEditClick,
 }: Props) {
   const { isDarkTheme } = useTheme();
   const { deleteGrocery } = useGroceries();
@@ -139,23 +141,37 @@ export function GroceryListItem({
             ))}
           </div>
         </div>
-        <Popconfirm
-          title="Удалить этот предмет из списка?"
-          onConfirm={() => handleDelete(item.id)}
-          okText="Да"
-          cancelText="Нет"
-        >
-          <DeleteOutlined
-            className="delete-icon"
+        <div style={{ display: 'flex', gap: '8px', alignSelf: 'center' }}>
+          <EditOutlined
+            className="edit-icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditClick(item);
+            }}
             style={{
               fontSize: '20px',
               color: isDarkTheme ? '#ffffff80' : '#858585',
-              marginRight: '4px',
               cursor: 'pointer',
-              alignSelf: 'center',
             }}
           />
-        </Popconfirm>
+          <Popconfirm
+            title="Удалить этот предмет из списка?"
+            onConfirm={() => handleDelete(item.id)}
+            okText="Да"
+            cancelText="Нет"
+          >
+            <DeleteOutlined
+              className="delete-icon"
+              style={{
+                fontSize: '20px',
+                color: isDarkTheme ? '#ffffff80' : '#858585',
+                marginRight: '4px',
+                cursor: 'pointer',
+                alignSelf: 'center',
+              }}
+            />
+          </Popconfirm>
+        </div>
       </div>
     </GroceryItemWrapper>
   );
