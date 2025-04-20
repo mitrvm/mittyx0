@@ -1,6 +1,10 @@
 import { DashboardLayoutSidebar } from '~pages/dashboard/ui';
 import styled from 'styled-components';
 import { useSidebar } from '~entities/contexts/sidebar-context';
+import { TagsCategoriesTable } from '~features';
+import { Flex } from 'antd';
+import { useEffect } from 'react';
+import { useTags, useCategories } from '~entities/groupers';
 
 const MainContent = styled.div<{ $isCollapsed: boolean }>`
   padding: 24px;
@@ -20,13 +24,30 @@ const MainContent = styled.div<{ $isCollapsed: boolean }>`
 
 export function TagsAndCategoriesPage() {
   const { isCollapsed } = useSidebar();
+  const { tags, fetchTags } = useTags();
+  const { categories, fetchCategories } = useCategories();
+
+  useEffect(() => {
+    fetchTags();
+    fetchCategories();
+  }, []);
+
+  const handleRefresh = () => {
+    fetchTags();
+    fetchCategories();
+  };
 
   return (
     <DashboardLayoutSidebar>
       <MainContent $isCollapsed={isCollapsed}>
-        <div>
-          <h1>Tags and categories</h1>
-        </div>
+        <Flex vertical gap={10}>
+          <TagsCategoriesTable
+            type="Categories"
+            data={categories}
+            onEdit={handleRefresh}
+          />
+          <TagsCategoriesTable type="Tags" data={tags} onEdit={handleRefresh} />
+        </Flex>
       </MainContent>
     </DashboardLayoutSidebar>
   );
