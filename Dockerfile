@@ -1,26 +1,55 @@
-# Используем официальный образ Node.js на Alpine (легковесный)
-FROM node:18-alpine
+# syntax=docker/dockerfile:1.4
 
-# Создаем рабочую директорию
+# 1. For build React app
+FROM node:18-alpine AS development
+
+# Set working directory
 WORKDIR /app
 
-# Копируем package.json и package-lock.json (или yarn.lock)
-COPY package*.json ./
+# Copy package files
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json  # or yarn.lock if using Yarn
 
-# Устанавливаем зависимости
-RUN npm install
+# Install dependencies
+RUN npm ci --silent
+COPY . /app
 
-# Копируем остальные файлы проекта
-COPY . .
+ENV PORT=3000
 
-# Собираем приложение
-RUN npm run build
+FROM development AS build
+ARG VITE_API_HOST
+ENV VITE_API_HOST=$VITE_API_HOST
+RUN npm run build  # or "yarn build" if using Yarn
 
-# Устанавливаем serve для статических файлов (альтернатива vite preview)
-RUN npm install -g serve
 
-# Открываем порт, который использует serve (по умолчанию 3000)
-EXPOSE 3000
+FROM development as dev-envs
+RUN <<EOF
+apk update
+apk add --no-cache git
+EOF
 
-# Запускаем приложение
-CMD ["serve", "-s", "dist"]
+RUN <<EOF
+adduser -s /bin/sh -D vscode
+addgroup docker
+adduser vscode docker
+EOF
+# install Docker tools (cli, buildx, compose)
+COPY --from=gloursdocker/docker / /
+#CMD [ "npm", "start" ]
+
+# 2. For Nginx setup
+FROM nginx:alpine
+
+# Copy config nginx
+COPY --from=build /app/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static assets
+RUN rm -rf ./*
+
+# Copy static assets from builder stage
+COPY --from=build /app/dist .
+
+# Containers run nginx with global directives and daemon off
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
