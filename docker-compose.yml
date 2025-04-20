@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: my-react-app
+    build:
+      context: .
+      target: development # или 'build' для продакшн-сборки
+      args:
+        - VITE_API_HOST=${VITE_API_HOST:-http://localhost:8000} # дефолтное значение
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true # для hot-reload в Docker
+    command: npm start
+
+  frontend-prod:
+    image: my-react-app-prod
+    build:
+      context: .
+      target: nginx # используем финальную стадию с Nginx
+      args:
+        - VITE_API_HOST=${VITE_API_HOST}
+    ports:
+      - '80:80'
+    restart: unless-stopped
+
+  # Если нужен бэкенд, можно добавить:
+  # backend:
+  #   image: your-backend-image
+  #   ports:
+  #     - "8000:8000"
