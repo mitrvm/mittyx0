@@ -22,7 +22,7 @@ services:
     image: my-react-app-prod
     build:
       context: .
-      target: nginx # используем финальную стадию с Nginx
+      # target: nginx # используем финальную стадию с Nginx
       args:
         - VITE_API_HOST=${VITE_API_HOST}
     ports:
