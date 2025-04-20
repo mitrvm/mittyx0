@@ -7,8 +7,7 @@ FROM node:18-alpine AS development
 WORKDIR /app
 
 # Copy package files
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json  # or yarn.lock if using Yarn
+COPY package.json package-lock.json /app/
 
 # Install dependencies
 RUN npm ci --silent
