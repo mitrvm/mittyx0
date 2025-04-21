@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { GroceryListItem } from '~features/groceries';
 import { AddEditGroceryModal } from '~features/groceries';
 import { useGroceries } from '~entities/groceries';
-import { SearchName, SelectCategory, SelectTags } from '~features';
+import { SearchName, SelectCategory, SelectTags } from '~features/groceries';
 import styled from 'styled-components';
 
 const LoadingOverlay = styled.div`

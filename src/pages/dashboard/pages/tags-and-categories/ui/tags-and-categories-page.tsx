@@ -27,6 +27,17 @@ export function TagsAndCategoriesPage() {
   const { tags, fetchTags } = useTags();
   const { categories, fetchCategories } = useCategories();
 
+  const mockTags = [
+    { id: 1, name: 'Sample', color: '#ff4d4f' },
+    { id: 2, name: 'Sample tag', color: '#52c41a' },
+    { id: 3, name: 'Sample', color: '#67A654' },
+  ];
+
+  const mockCategories = [
+    { id: 1, name: 'Sample', color: '#faad14' },
+    { id: 2, name: 'Sample', color: '#722ed1' },
+  ];
+
   useEffect(() => {
     fetchTags();
     fetchCategories();
@@ -43,10 +54,14 @@ export function TagsAndCategoriesPage() {
         <Flex vertical gap={10}>
           <TagsCategoriesTable
             type="Categories"
-            data={categories}
+            data={categories?.length ? categories : mockCategories}
             onEdit={handleRefresh}
           />
-          <TagsCategoriesTable type="Tags" data={tags} onEdit={handleRefresh} />
+          <TagsCategoriesTable
+            type="Tags"
+            data={tags?.length ? tags : mockTags}
+            onEdit={handleRefresh}
+          />
         </Flex>
       </MainContent>
     </DashboardLayoutSidebar>

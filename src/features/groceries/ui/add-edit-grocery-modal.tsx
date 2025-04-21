@@ -89,7 +89,12 @@ export function AddEditGroceryModal({
         <Button key="cancel" onClick={onClose}>
           Отменить
         </Button>,
-        <Button key="submit" type="primary" onClick={handleSubmit}>
+        <Button
+          key="submit"
+          type="primary"
+          onClick={handleSubmit}
+          style={{ backgroundColor: '#67A654' }}
+        >
           {type === 'add' ? 'Добавить' : 'Изменить'}
         </Button>,
       ]}

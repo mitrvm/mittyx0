@@ -1,59 +1,19 @@
-import { Table, Tag, Typography, Popconfirm, Form, Input, Button } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Table, Tag, Form, Button, Flex, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { TagsAndCategories } from '~entities/groupers';
 import { useCategories, useTags } from '~entities/groupers';
 import toast from 'react-hot-toast';
-import { useState, KeyboardEvent } from 'react';
-import { JSX } from 'react/jsx-runtime';
+import { useState } from 'react';
 import { useTheme } from '~entities/contexts/theme-context';
+import { AddGrouperModal } from '~features/groupers/ui/add-grouper-modal';
+import { EditableCell } from './ui/editable-cell';
+import { ActionButtons } from './ui/action-buttons';
+import { TableProps } from './model/types';
 
-interface EditableCellProps {
-  editing: boolean;
-  dataIndex: string;
-  title: string;
-  record: TagsAndCategories;
-  index: number;
-  children: React.ReactNode;
-}
-
-function EditableCell({
-  editing,
-  dataIndex,
-  title,
-  record,
-  children,
-  ...restProps
-}: EditableCellProps): JSX.Element {
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{ margin: 0 }}
-          rules={[{ required: true, message: `Please Input ${title}!` }]}
-        >
-          <Input />
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-}
-
-interface TableProps {
-  type: 'Tags' | 'Categories';
-  data: TagsAndCategories[];
-  onEdit: () => void;
-}
-
-export function TagsCategoriesTable({
-  type,
-  data,
-  onEdit,
-}: TableProps): JSX.Element {
+export function TagsCategoriesTable({ type, data, onEdit }: TableProps) {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState<number>(-1);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { deleteCategory, editCategory } = useCategories();
   const { deleteTag, editTag } = useTags();
   const { isDarkTheme } = useTheme();
@@ -71,6 +31,10 @@ export function TagsCategoriesTable({
   const save = async (id: number) => {
     try {
       const row = await form.validateFields();
+      if (row.color?.toHexString) {
+        row.color = row.color.toHexString();
+      }
+
       const updateFn = type === 'Categories' ? editCategory : editTag;
 
       await updateFn(id, row);
@@ -98,24 +62,20 @@ export function TagsCategoriesTable({
 
   const columns = [
     {
-      key: 1,
-      title: 'ID',
-      dataIndex: 'id',
-      width: '5%',
-      editable: false,
-    },
-    {
       key: 2,
       title: 'Название',
       dataIndex: 'name',
-      width: '40%',
       editable: true,
+      render: (text: string) => (
+        <div style={{ whiteSpace: 'normal', wordBreak: 'break-all' }}>
+          {text}
+        </div>
+      ),
     },
     {
       key: 3,
       title: 'Цвет',
       dataIndex: 'color',
-      width: '40%',
       editable: true,
       render: (_: any, record: TagsAndCategories) => (
         <Tag
@@ -133,73 +93,19 @@ export function TagsCategoriesTable({
     {
       key: 4,
       title: '',
-      width: '10%',
-      render: (_: any, record: TagsAndCategories) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <Button
-              type="link"
-              onClick={() => save(record.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') save(record.id);
-              }}
-              style={{
-                marginRight: 8,
-                background: 'none',
-                border: 'none',
-                color: '#1677ff',
-                cursor: 'pointer',
-                padding: '4px 8px',
-              }}
-            >
-              Редактировать
-            </Button>
-            <Button
-              type="link"
-              onClick={cancel}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') cancel();
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#1677ff',
-                cursor: 'pointer',
-                padding: '4px 8px',
-              }}
-            >
-              Отмена
-            </Button>
-          </span>
-        ) : (
-          <span>
-            <EditOutlined
-              disabled={editingKey !== -1}
-              onClick={() => edit(record)}
-              onKeyDown={(e: KeyboardEvent) => {
-                if (e.key === 'Enter') edit(record);
-              }}
-              style={{ fontSize: '16px', marginRight: 8 }}
-              color={isDarkTheme ? '#ffffff80' : '#858585'}
-            />
-            <Popconfirm
-              title={`Удалить этот ${type === 'Tags' ? 'тег' : 'категорию'}?`}
-              onConfirm={() => handleDelete(record.id)}
-              okText="Да"
-              cancelText="Нет"
-            >
-              <DeleteOutlined
-                color={isDarkTheme ? '#ffffff80' : '#858585'}
-                style={{ fontSize: '16px', marginLeft: 8 }}
-                onKeyDown={(e: KeyboardEvent) => {
-                  if (e.key === 'Enter') handleDelete(record.id);
-                }}
-              />
-            </Popconfirm>
-          </span>
-        );
-      },
+      align: 'right' as const,
+      render: (_: any, record: TagsAndCategories) => (
+        <ActionButtons
+          record={record}
+          editable={isEditing(record)}
+          type={type}
+          isDarkTheme={isDarkTheme}
+          onSave={save}
+          onCancel={cancel}
+          onEdit={edit}
+          onDelete={handleDelete}
+        />
+      ),
     },
   ];
 
@@ -220,9 +126,19 @@ export function TagsCategoriesTable({
 
   return (
     <>
-      <Typography.Title level={4} style={{ marginBottom: 0 }}>
-        {type === 'Tags' ? 'Тэги' : 'Категории'}
-      </Typography.Title>
+      <Flex justify="space-between" align="center" style={{ marginTop: 20 }}>
+        <Typography.Text style={{ fontSize: 18, fontWeight: 600 }}>
+          {type === 'Tags' ? 'Тэги' : 'Категории'}
+        </Typography.Text>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          style={{ backgroundColor: '#67A654' }}
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          Добавить
+        </Button>
+      </Flex>
       <Form form={form} component={false}>
         <Table
           components={{
@@ -236,6 +152,15 @@ export function TagsCategoriesTable({
           rowKey="id"
         />
       </Form>
+
+      <AddGrouperModal
+        type={type === 'Tags' ? 'tag' : 'category'}
+        isOpen={isAddModalOpen}
+        onClose={async () => {
+          setIsAddModalOpen(false);
+          onEdit();
+        }}
+      />
     </>
   );
 }

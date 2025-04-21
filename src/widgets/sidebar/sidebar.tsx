@@ -141,6 +141,9 @@ export function Sidebar() {
               <Link
                 rel="noopener"
                 to={pathKeys.dashboard.tagsAndCategories.root()}
+                style={getLinkStyle(
+                  pathKeys.dashboard.tagsAndCategories.root(),
+                )}
               >
                 Тэги, Категории
               </Link>
@@ -148,9 +151,17 @@ export function Sidebar() {
             <Menu.Item
               key="3"
               style={getMenuItemStyle(pathKeys.dashboard.stats.root())}
-              icon={<BarChartOutlined />}
+              icon={
+                <BarChartOutlined
+                  style={getIconStyle(pathKeys.dashboard.stats.root())}
+                />
+              }
             >
-              <Link rel="noopener" to={pathKeys.dashboard.stats.root()}>
+              <Link
+                rel="noopener"
+                to={pathKeys.dashboard.stats.root()}
+                style={getLinkStyle(pathKeys.dashboard.stats.root())}
+              >
                 Статистика
               </Link>
             </Menu.Item>
