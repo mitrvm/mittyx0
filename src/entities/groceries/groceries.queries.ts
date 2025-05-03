@@ -5,11 +5,12 @@ export function useGroceries() {
   const [groceries, setGroceries] = useState<GroceryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const baseUrl = 'http://45.155.204.61'; // TODO: вынести
 
   const fetchGroceries = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/products');
+      const response = await fetch(`${baseUrl}/api/products`);
       if (!response.ok) {
         throw new Error('Failed to fetch groceries');
       }
@@ -50,7 +51,7 @@ export function useGroceries() {
     priority: number;
   }) => {
     try {
-      const response = await fetch('/api/products', {
+      const response = await fetch(`${baseUrl}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ export function useGroceries() {
     priority: number;
   }) => {
     try {
-      const response = await fetch(`/api/products/${data.id}`, {
+      const response = await fetch(`${baseUrl}/api/products/${data.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ export function useGroceries() {
 
   const deleteGrocery = async (itemId: number) => {
     try {
-      const response = await fetch(`/api/products/${itemId}`, {
+      const response = await fetch(`${baseUrl}/api/products/${itemId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
