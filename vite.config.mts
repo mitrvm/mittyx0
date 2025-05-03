@@ -26,7 +26,7 @@ export default ({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'http://192.168.0.4:8080',
+          target: 'http://45.155.204.61',
           changeOrigin: true,
           secure: false,
         },
