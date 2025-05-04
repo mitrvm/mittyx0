@@ -48,7 +48,7 @@ export function useGroceries() {
     name: string;
     category_id: number;
     tags_id: number[];
-    priority: number;
+    priority: number | undefined;
   }) => {
     try {
       const response = await fetch(`${baseUrl}/api/products`, {
@@ -75,7 +75,7 @@ export function useGroceries() {
     name: string;
     category_id: number;
     tags_id: number[];
-    priority: number;
+    priority: number | undefined;
   }) => {
     try {
       const response = await fetch(`${baseUrl}/api/products/${data.id}`, {

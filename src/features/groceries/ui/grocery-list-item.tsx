@@ -25,7 +25,7 @@ interface Props {
   item: {
     id: number;
     name: string;
-    priority: number;
+    priority: number | undefined;
     status: ProductStatus;
     category_id: number;
     tags: TagsAndCategories[];

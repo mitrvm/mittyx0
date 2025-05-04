@@ -29,7 +29,7 @@ interface AddGroceryFormData {
   name: string;
   category: number;
   tags: number[];
-  priority: number;
+  priority: number | undefined;
 }
 
 export function GroceryListWidget() {
@@ -97,7 +97,7 @@ export function GroceryListWidget() {
       name: item.name,
       category: item.category_id,
       tags: item.tags.map((tag: any) => tag.id),
-      priority: item.priority,
+      priority: item.priority || undefined,
     });
     setIsEditModalOpen(true);
   };

@@ -8,7 +8,7 @@ interface AddGroceryFormData {
   name: string;
   category: number;
   tags: number[];
-  priority: number;
+  priority: number | undefined;
 }
 
 type ModalType = 'add' | 'edit';
@@ -60,7 +60,7 @@ export function AddEditGroceryModal({
           name: values.name,
           category_id: values.category,
           tags_id: values.tags,
-          priority: values.priority,
+          priority: Number(values.priority) || undefined,
         });
         toast.success('Изменения сохранены.');
       } else {
@@ -68,7 +68,7 @@ export function AddEditGroceryModal({
           name: values.name,
           category_id: values.category,
           tags_id: values.tags,
-          priority: values.priority,
+          priority: Number(values.priority) || undefined,
         });
         toast.success('Товар добавлен.');
       }

@@ -37,7 +37,7 @@ export function useCategories() {
 
   const createCategory = async (data: CategoryTagData) => {
     try {
-      const response = await fetch(`${baseUrl}//api/categories`, {
+      const response = await fetch(`${baseUrl}/api/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export function useCategories() {
 
   const editCategory = async (id: number, data: CategoryTagData) => {
     try {
-      const response = await fetch(`${baseUrl}//api/categories/${id}`, {
+      const response = await fetch(`${baseUrl}/api/categories/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export function useCategories() {
 
   const deleteCategory = async (id: number) => {
     try {
-      const response = await fetch(`${baseUrl}//api/categories/${id}`, {
+      const response = await fetch(`${baseUrl}/api/categories/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -113,7 +113,7 @@ export function useTags() {
   const fetchTags = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${baseUrl}//api/tags`);
+      const response = await fetch(`${baseUrl}/api/tags`);
       if (!response.ok) {
         throw new Error('Failed to fetch tags');
       }
@@ -130,7 +130,7 @@ export function useTags() {
 
   const createTag = async (data: CategoryTagData) => {
     try {
-      const response = await fetch(`${baseUrl}//api/tags`, {
+      const response = await fetch(`${baseUrl}/api/tags`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export function useTags() {
 
   const editTag = async (id: number, data: CategoryTagData) => {
     try {
-      const response = await fetch(`${baseUrl}//api/tags/${id}`, {
+      const response = await fetch(`${baseUrl}/api/tags/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export function useTags() {
 
   const deleteTag = async (id: number) => {
     try {
-      const response = await fetch(`${baseUrl}//api/tags/${id}`, {
+      const response = await fetch(`${baseUrl}/api/tags/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

@@ -11,7 +11,7 @@ export const ProductStatusSchema = z.enum(['need_buying', 'bought']);
 export const GroceryItemSchema = z.object({
   id: z.number(),
   name: z.string(),
-  priority: z.number(),
+  priority: z.number().nullable(),
   status: ProductStatusSchema,
   category_id: z.number(),
   tags: z.array(TagsAndCategoriesSchema),
