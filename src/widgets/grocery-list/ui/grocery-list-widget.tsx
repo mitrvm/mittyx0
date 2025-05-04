@@ -1,9 +1,5 @@
 import { List, Button, Flex, Spin } from 'antd';
-import {
-  CarryOutOutlined,
-  PlusOutlined,
-  SelectOutlined,
-} from '@ant-design/icons';
+import { CarryOutOutlined, PlusOutlined } from '@ant-design/icons';
 import { useState, useCallback, useEffect } from 'react';
 import { GroceryListItem } from '~features/groceries';
 import { AddEditGroceryModal } from '~features/groceries';
@@ -127,7 +123,7 @@ export function GroceryListWidget() {
           <SelectTags />
         </Flex>
         <Flex style={{ gap: '12px' }}>
-          <IconButton
+          {/* <IconButton
             type="primary"
             icon={<SelectOutlined />}
             style={{ backgroundColor: '#a68454' }}
@@ -136,14 +132,15 @@ export function GroceryListWidget() {
             // }}
           >
             Добавить продукты (выбрать)
-          </IconButton>
+          </IconButton> */}
           <IconButton
             type="primary"
             icon={<PlusOutlined />}
             style={{ backgroundColor: '#67a654' }}
             onClick={() => setIsAddModalOpen(true)}
           >
-            Добавить продукт (новый)
+            Добавить продукт
+            {/* (новый) */}
           </IconButton>
         </Flex>
       </StyledHeader>

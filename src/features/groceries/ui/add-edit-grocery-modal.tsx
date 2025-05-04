@@ -1,7 +1,9 @@
 import { Modal, Form, Input, Select, Button } from 'antd';
 import { toast } from 'react-hot-toast';
 import { useGroceries } from '~entities/groceries/groceries.queries';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useTags } from '~entities/groupers/groupers.queries';
+import { useCategories } from '~entities/groupers/groupers.queries';
 
 interface AddGroceryFormData {
   id?: number;
@@ -20,21 +22,6 @@ interface Props {
   initialData?: AddGroceryFormData;
 }
 
-const categories = [
-  { id: 1, name: 'Молочные продукты' },
-  { id: 2, name: 'Фрукты' },
-  { id: 3, name: 'Овощи' },
-  { id: 4, name: 'Мясо' },
-  { id: 5, name: 'Снеки' },
-];
-
-const availableTags = [
-  { id: 1, name: 'Еженедельно' },
-  { id: 2, name: 'Завтрак' },
-  { id: 3, name: 'Вкусно' },
-  { id: 4, name: 'Здорово' },
-];
-
 export function AddEditGroceryModal({
   isOpen,
   onClose,
@@ -43,6 +30,14 @@ export function AddEditGroceryModal({
 }: Props) {
   const [form] = Form.useForm<AddGroceryFormData>();
   const { createGrocery, editGrocery } = useGroceries();
+
+  const { tags, fetchTags } = useTags();
+  const { categories, fetchCategories } = useCategories();
+
+  useEffect(() => {
+    fetchTags();
+    fetchCategories();
+  }, []);
 
   React.useEffect(() => {
     if (type === 'edit' && initialData) {
@@ -123,7 +118,7 @@ export function AddEditGroceryModal({
 
         <Form.Item name="tags" label="Теги">
           <Select placeholder="Выберите теги" allowClear mode="multiple">
-            {availableTags.map((tag) => (
+            {tags.map((tag) => (
               <Select.Option key={tag.id} value={tag.id}>
                 {tag.name}
               </Select.Option>
