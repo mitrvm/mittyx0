@@ -31,6 +31,7 @@ interface Props {
     tags: TagsAndCategories[];
     category: TagsAndCategories;
   };
+  isSelected: boolean;
   onToggle: (id: number) => void;
   isRemoving: boolean;
   onDelete: () => Promise<void>;
@@ -39,6 +40,7 @@ interface Props {
 
 export function GroceryListItem({
   item,
+  isSelected,
   onToggle,
   isRemoving,
   onDelete,
@@ -61,7 +63,7 @@ export function GroceryListItem({
     marginBottom: '8px',
     background: getBackgroundColor(),
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    cursor: 'pointer',
+    cursor: item.status === 'bought' ? 'default' : 'pointer',
     minWidth: 'auto',
     userSelect: 'none',
     width: '100%',
@@ -81,7 +83,7 @@ export function GroceryListItem({
     <GroceryItemWrapper className={isRemoving ? 'removing' : ''}>
       <div
         role="button"
-        tabIndex={0}
+        tabIndex={item.status === 'bought' ? -1 : 0}
         style={{
           ...groceryItemStyle,
           borderLeft: `4px solid ${item.category.color}`,
@@ -96,7 +98,10 @@ export function GroceryListItem({
           }
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (
+            item.status !== 'bought' &&
+            (e.key === 'Enter' || e.key === ' ')
+          ) {
             e.preventDefault();
             onToggle(item.id);
           }
@@ -104,14 +109,14 @@ export function GroceryListItem({
       >
         <Checkbox
           className="ant-checkbox"
-          checked={item.status === 'bought'}
+          checked={isSelected || item.status === 'bought'}
           onChange={() => onToggle(item.id)}
+          disabled={item.status === 'bought'}
         />
         <div style={{ marginLeft: '12px', flex: 1, width: '100%' }}>
           <Typography.Text
             style={{
-              textDecoration:
-                item.status === 'bought' ? 'line-through' : 'none',
+              textDecoration: isSelected ? 'line-through' : 'none',
               marginLeft: '8px',
               userSelect: 'none',
               wordBreak: 'break-word',

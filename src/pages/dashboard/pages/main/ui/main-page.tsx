@@ -27,7 +27,7 @@ export function MainPage() {
   return (
     <DashboardLayoutSidebar>
       <MainContent $isCollapsed={isCollapsed}>
-        <GroceryListWidget />
+        <GroceryListWidget statusFilter="need_buying" />
       </MainContent>
     </DashboardLayoutSidebar>
   );

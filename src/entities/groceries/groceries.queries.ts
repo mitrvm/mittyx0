@@ -3,6 +3,7 @@ import { GroceryItem, ApiResponseSchema } from './groceries.contracts';
 
 export function useGroceries() {
   const [groceries, setGroceries] = useState<GroceryItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const baseUrl = 'http://45.155.204.61'; // TODO: вынести
@@ -25,23 +26,19 @@ export function useGroceries() {
     }
   };
 
-  const updateGroceryStatus = (id: number) => {
-    setGroceries((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              status: item.status === 'need_buying' ? 'bought' : 'need_buying',
-            }
-          : item,
-      ),
+  const toggleItemSelection = (id: number) => {
+    setSelectedItems((prev) =>
+      prev.includes(id)
+        ? prev.filter((itemId) => itemId !== id)
+        : [...prev, id],
     );
   };
 
-  const removeCheckedGroceries = () => {
+  const removeSelectedGroceries = () => {
     setGroceries((prev) =>
-      prev.filter((item) => item.status === 'need_buying'),
+      prev.filter((item) => !selectedItems.includes(item.id)),
     );
+    setSelectedItems([]);
   };
 
   const createGrocery = async (data: {
@@ -114,15 +111,46 @@ export function useGroceries() {
     }
   };
 
+  const updateItemsStatus = async (
+    productIds: number[],
+    status: 'bought' | 'need_buying',
+  ) => {
+    try {
+      const response = await fetch(`${baseUrl}/api/products/statuses`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          products_ids: productIds,
+          status,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update items status');
+      }
+
+      await fetchGroceries();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to update items status',
+      );
+      throw err;
+    }
+  };
+
   return {
     groceries,
+    selectedItems,
     isLoading,
     error,
     fetchGroceries,
-    updateGroceryStatus,
-    removeCheckedGroceries,
+    toggleItemSelection,
+    removeSelectedGroceries,
     createGrocery,
     deleteGrocery,
     editGrocery,
+    updateItemsStatus,
   };
 }

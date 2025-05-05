@@ -1,7 +1,8 @@
 import { Input } from 'antd';
 import styled from 'styled-components';
 
-const StyledInput = styled(Input)`
+const { Search } = Input;
+const StyledInput = styled(Search)`
   width: 12vw;
   min-width: 200px;
 

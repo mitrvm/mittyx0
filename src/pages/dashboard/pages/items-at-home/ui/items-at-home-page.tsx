@@ -26,8 +26,7 @@ export function ItemsAtHomePage() {
     <DashboardLayoutSidebar>
       <MainContent $isCollapsed={isCollapsed}>
         <div>
-          <h1>Items at Home</h1>
-          <GroceryListWidget />
+          <GroceryListWidget statusFilter="bought" />
         </div>
       </MainContent>
     </DashboardLayoutSidebar>

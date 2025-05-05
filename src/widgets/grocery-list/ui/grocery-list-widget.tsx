@@ -6,6 +6,7 @@ import { AddEditGroceryModal } from '~features/groceries';
 import { useGroceries } from '~entities/groceries';
 import { SearchName, SelectCategory, SelectTags } from '~features/groceries';
 import styled from 'styled-components';
+import toast from 'react-hot-toast';
 
 const LoadingOverlay = styled.div`
   position: absolute;
@@ -28,14 +29,19 @@ interface AddGroceryFormData {
   priority: number | undefined;
 }
 
-export function GroceryListWidget() {
+interface GroceryListWidgetProps {
+  statusFilter?: 'need_buying' | 'bought';
+}
+
+export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
   const {
     groceries,
+    selectedItems,
     isLoading,
     error,
     fetchGroceries,
-    updateGroceryStatus,
-    removeCheckedGroceries,
+    toggleItemSelection,
+    updateItemsStatus,
   } = useGroceries();
   const [removingItems, setRemovingItems] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -43,24 +49,6 @@ export function GroceryListWidget() {
   const [editingItem, setEditingItem] = useState<AddGroceryFormData | null>(
     null,
   );
-
-  const handleRemoveChecked = useCallback(() => {
-    const itemsToRemove = groceries
-      .filter((item) => item.status === 'bought')
-      .map((item) => item.id);
-    setRemovingItems(itemsToRemove);
-
-    setTimeout(() => {
-      removeCheckedGroceries();
-      setRemovingItems([]);
-    }, 300);
-  }, [groceries, removeCheckedGroceries]);
-
-  const hasCheckedItems = groceries.some((item) => item.status === 'bought');
-
-  useEffect(() => {
-    fetchGroceries();
-  }, []);
 
   const IconButton = styled(Button)`
     display: flex;
@@ -82,6 +70,20 @@ export function GroceryListWidget() {
       justify-content: flex-end;
     }
   `;
+
+  const handleRemoveChecked = useCallback(async () => {
+    if (selectedItems.length === 0) return;
+
+    try {
+      await updateItemsStatus(selectedItems, 'bought');
+      setRemovingItems([]);
+    } catch (error) {
+      toast.error('F3E@#R@#R@r23r3r');
+    }
+  }, [selectedItems, updateItemsStatus]);
+  useEffect(() => {
+    fetchGroceries();
+  }, []);
 
   const handleDeleteOrEdit = async () => {
     await fetchGroceries();
@@ -152,31 +154,38 @@ export function GroceryListWidget() {
           </LoadingOverlay>
         )}
         <List style={{ width: '100%' }}>
-          {groceries.map((item) => (
-            <GroceryListItem
-              key={item.id}
-              item={item}
-              onToggle={updateGroceryStatus}
-              isRemoving={removingItems.includes(item.id)}
-              onDelete={handleDeleteOrEdit}
-              onEditClick={handleEditClick}
-            />
-          ))}
+          {groceries
+            .filter((item) => item.status === statusFilter)
+            .map((item) => (
+              <GroceryListItem
+                key={item.id}
+                item={item}
+                isSelected={selectedItems.includes(item.id)}
+                onToggle={(id) => {
+                  if (item.status !== 'bought') {
+                    toggleItemSelection(id);
+                  }
+                }}
+                isRemoving={removingItems.includes(item.id)}
+                onDelete={handleDeleteOrEdit}
+                onEditClick={handleEditClick}
+              />
+            ))}
         </List>
       </div>
-
-      <Button
-        type="primary"
-        danger
-        icon={<CarryOutOutlined />}
-        onClick={() => {
-          handleRemoveChecked();
-        }}
-        disabled={!hasCheckedItems}
-        style={{ marginTop: '16px' }}
-      >
-        Куплено
-      </Button>
+      {statusFilter === 'need_buying' && (
+        <Button
+          type="primary"
+          danger
+          icon={<CarryOutOutlined />}
+          onClick={() => {
+            handleRemoveChecked();
+          }}
+          style={{ marginTop: '16px' }}
+        >
+          Куплено
+        </Button>
+      )}
       <AddEditGroceryModal
         type="add"
         isOpen={isAddModalOpen}
