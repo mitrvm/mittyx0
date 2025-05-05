@@ -162,9 +162,7 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
                 item={item}
                 isSelected={selectedItems.includes(item.id)}
                 onToggle={(id) => {
-                  if (item.status !== 'bought') {
-                    toggleItemSelection(id);
-                  }
+                  toggleItemSelection(id);
                 }}
                 isRemoving={removingItems.includes(item.id)}
                 onDelete={handleDeleteOrEdit}
@@ -175,6 +173,7 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
       </div>
       {statusFilter === 'need_buying' && (
         <Button
+          disabled={selectedItems.length === 0}
           type="primary"
           danger
           icon={<CarryOutOutlined />}
@@ -184,6 +183,19 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
           style={{ marginTop: '16px' }}
         >
           Куплено
+        </Button>
+      )}
+      {statusFilter === 'bought' && (
+        <Button
+          disabled={selectedItems.length === 0}
+          type="primary"
+          icon={<CarryOutOutlined />}
+          onClick={() => {
+            updateItemsStatus(selectedItems, 'need_buying');
+          }}
+          style={{ marginTop: '16px' }}
+        >
+          В список покупок
         </Button>
       )}
       <AddEditGroceryModal

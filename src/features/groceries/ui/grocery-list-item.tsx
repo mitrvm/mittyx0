@@ -63,7 +63,7 @@ export function GroceryListItem({
     marginBottom: '8px',
     background: getBackgroundColor(),
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    cursor: item.status === 'bought' ? 'default' : 'pointer',
+    cursor: 'pointer',
     minWidth: 'auto',
     userSelect: 'none',
     width: '100%',
@@ -83,7 +83,7 @@ export function GroceryListItem({
     <GroceryItemWrapper className={isRemoving ? 'removing' : ''}>
       <div
         role="button"
-        tabIndex={item.status === 'bought' ? -1 : 0}
+        tabIndex={0}
         style={{
           ...groceryItemStyle,
           borderLeft: `4px solid ${item.category.color}`,
@@ -98,10 +98,7 @@ export function GroceryListItem({
           }
         }}
         onKeyDown={(e) => {
-          if (
-            item.status !== 'bought' &&
-            (e.key === 'Enter' || e.key === ' ')
-          ) {
+          if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             onToggle(item.id);
           }
@@ -109,9 +106,8 @@ export function GroceryListItem({
       >
         <Checkbox
           className="ant-checkbox"
-          checked={isSelected || item.status === 'bought'}
+          checked={isSelected}
           onChange={() => onToggle(item.id)}
-          disabled={item.status === 'bought'}
         />
         <div style={{ marginLeft: '12px', flex: 1, width: '100%' }}>
           <Typography.Text
@@ -160,7 +156,7 @@ export function GroceryListItem({
             }}
           />
           <Popconfirm
-            title="Удалить этот предмет из списка?"
+            title="Удалить этот предмет насовсем?"
             onConfirm={() => handleDelete(item.id)}
             okText="Да"
             cancelText="Нет"

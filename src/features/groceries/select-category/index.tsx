@@ -1,5 +1,7 @@
 import { Select } from 'antd';
+import { useEffect } from 'react';
 import styled from 'styled-components';
+import { useCategories } from '~entities/groupers';
 
 const StyledSelect = styled(Select)`
   width: 12vw;
@@ -12,20 +14,20 @@ const StyledSelect = styled(Select)`
 
 export function SelectCategory() {
   const placeholder = 'Категории';
+  const { categories, fetchCategories } = useCategories();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
     <StyledSelect
       placeholder={placeholder}
       mode="multiple"
-      options={[
-        {
-          label: <span>{placeholder}</span>,
-          title: placeholder,
-          options: [
-            { value: '1', label: '1' },
-            { value: '2', label: '2' },
-          ],
-        },
-      ]}
+      options={categories.map((category: any) => ({
+        label: category.name,
+        value: category.id,
+      }))}
       allowClear
     />
   );

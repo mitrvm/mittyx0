@@ -1,5 +1,7 @@
 import { Select } from 'antd';
+import { useEffect } from 'react';
 import styled from 'styled-components';
+import { useTags } from '~entities/groupers';
 
 const StyledSelect = styled(Select)`
   width: 12vw;
@@ -11,21 +13,21 @@ const StyledSelect = styled(Select)`
 `;
 
 export function SelectTags() {
+  const { tags, fetchTags } = useTags();
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
   const placeholder = 'Теги';
   return (
     <StyledSelect
       placeholder={placeholder}
       mode="multiple"
-      options={[
-        {
-          label: <span>{placeholder}</span>,
-          title: placeholder,
-          options: [
-            { value: '1', label: '1' },
-            { value: '2', label: '2' },
-          ],
-        },
-      ]}
+      options={tags.map((tag: any) => ({
+        label: tag.name,
+        value: tag.id,
+      }))}
       allowClear
     />
   );
