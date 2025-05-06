@@ -1,12 +1,24 @@
 import { List, Button, Flex, Spin } from 'antd';
 import { CarryOutOutlined, PlusOutlined } from '@ant-design/icons';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { GroceryListItem } from '~features/groceries';
 import { AddEditGroceryModal } from '~features/groceries';
 import { useGroceries } from '~entities/groceries';
 import { SearchName, SelectCategory, SelectTags } from '~features/groceries';
 import styled from 'styled-components';
 import toast from 'react-hot-toast';
+
+interface AddGroceryFormData {
+  id?: number;
+  name: string;
+  category: number;
+  tags: number[];
+  priority: number | undefined;
+}
+
+interface GroceryListWidgetProps {
+  statusFilter?: 'need_buying' | 'bought';
+}
 
 const LoadingOverlay = styled.div`
   position: absolute;
@@ -21,17 +33,26 @@ const LoadingOverlay = styled.div`
   z-index: 1000;
 `;
 
-interface AddGroceryFormData {
-  id?: number;
-  name: string;
-  category: number;
-  tags: number[];
-  priority: number | undefined;
-}
+const IconButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  @media (max-width: 1215px) {
+    margin-top: 10px;
+  }
+  @media (max-width: 590px) {
+    .ant-btn-icon + span:not(.anticon) {
+      display: none;
+    }
+  }
+`;
 
-interface GroceryListWidgetProps {
-  statusFilter?: 'need_buying' | 'bought';
-}
+const StyledHeader = styled.div`
+  justify-content: space-between;
+  @media (max-width: 768px) {
+    justify-content: flex-end;
+  }
+`;
 
 export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
   const {
@@ -49,27 +70,33 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
   const [editingItem, setEditingItem] = useState<AddGroceryFormData | null>(
     null,
   );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
-  const IconButton = styled(Button)`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    @media (max-width: 1215px) {
-      margin-top: 10px;
-    }
-    @media (max-width: 590px) {
-      .ant-btn-icon + span:not(.anticon) {
-        display: none;
-      }
-    }
-  `;
-
-  const StyledHeader = styled.div`
-    justify-content: space-between;
-    @media (max-width: 768px) {
-      justify-content: flex-end;
-    }
-  `;
+  const filteredGroceries = useMemo(
+    () =>
+      groceries
+        .filter((item) => item.status === statusFilter)
+        .filter((item) =>
+          searchQuery
+            ? item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            : true,
+        )
+        .filter((item) =>
+          selectedCategories.length > 0
+            ? selectedCategories.includes(item.category_id)
+            : true,
+        )
+        .filter((item) =>
+          selectedTags.length > 0
+            ? selectedTags.some((tagId) =>
+                item.tags.some((itemTag: any) => itemTag.id === tagId),
+              )
+            : true,
+        ),
+    [groceries, statusFilter, searchQuery, selectedCategories, selectedTags],
+  );
 
   const handleRemoveChecked = useCallback(async () => {
     if (selectedItems.length === 0) return;
@@ -78,7 +105,7 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
       await updateItemsStatus(selectedItems, 'bought');
       setRemovingItems([]);
     } catch (error) {
-      toast.error('F3E@#R@#R@r23r3r');
+      toast.error('Ошибка!! :(');
     }
   }, [selectedItems, updateItemsStatus]);
   useEffect(() => {
@@ -100,6 +127,18 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
     setIsEditModalOpen(true);
   };
 
+  const handleSearch = useCallback((value: string) => {
+    setSearchQuery(value);
+  }, []);
+
+  const handleCategoryChange = useCallback((values: number[]) => {
+    setSelectedCategories(values);
+  }, []);
+
+  const handleTagsChange = useCallback((values: number[]) => {
+    setSelectedTags(values);
+  }, []);
+
   return (
     <div style={{ maxWidth: '100%' }}>
       {error && (
@@ -120,9 +159,9 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
             flexWrap: 'wrap',
           }}
         >
-          <SearchName />
-          <SelectCategory />
-          <SelectTags />
+          <SearchName onSearch={handleSearch} value={searchQuery} />
+          <SelectCategory onChange={handleCategoryChange} />
+          <SelectTags onChange={handleTagsChange} />
         </Flex>
         <Flex style={{ gap: '12px' }}>
           {/* <IconButton
@@ -154,21 +193,19 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
           </LoadingOverlay>
         )}
         <List style={{ width: '100%' }}>
-          {groceries
-            .filter((item) => item.status === statusFilter)
-            .map((item) => (
-              <GroceryListItem
-                key={item.id}
-                item={item}
-                isSelected={selectedItems.includes(item.id)}
-                onToggle={(id) => {
-                  toggleItemSelection(id);
-                }}
-                isRemoving={removingItems.includes(item.id)}
-                onDelete={handleDeleteOrEdit}
-                onEditClick={handleEditClick}
-              />
-            ))}
+          {filteredGroceries.map((item) => (
+            <GroceryListItem
+              key={item.id}
+              item={item}
+              isSelected={selectedItems.includes(item.id)}
+              onToggle={(id) => {
+                toggleItemSelection(id);
+              }}
+              isRemoving={removingItems.includes(item.id)}
+              onDelete={handleDeleteOrEdit}
+              onEditClick={handleEditClick}
+            />
+          ))}
         </List>
       </div>
       {statusFilter === 'need_buying' && (

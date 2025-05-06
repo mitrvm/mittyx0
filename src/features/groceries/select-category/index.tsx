@@ -12,7 +12,11 @@ const StyledSelect = styled(Select)`
   }
 `;
 
-export function SelectCategory() {
+export function SelectCategory({
+  onChange,
+}: {
+  onChange: (values: number[]) => void;
+}) {
   const placeholder = 'Категории';
   const { categories, fetchCategories } = useCategories();
 
@@ -28,6 +32,7 @@ export function SelectCategory() {
         label: category.name,
         value: category.id,
       }))}
+      onChange={(values) => onChange(values as number[])}
       allowClear
     />
   );

@@ -12,7 +12,11 @@ const StyledSelect = styled(Select)`
   }
 `;
 
-export function SelectTags() {
+export function SelectTags({
+  onChange,
+}: {
+  onChange: (values: number[]) => void;
+}) {
   const { tags, fetchTags } = useTags();
 
   useEffect(() => {
@@ -28,6 +32,7 @@ export function SelectTags() {
         label: tag.name,
         value: tag.id,
       }))}
+      onChange={(values) => onChange(values as number[])}
       allowClear
     />
   );

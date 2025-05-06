@@ -11,7 +11,23 @@ const StyledInput = styled(Search)`
   }
 `;
 
-export function SearchName() {
+export function SearchName({
+  onSearch,
+  value,
+}: {
+  onSearch: (value: string) => void;
+  value: string;
+}) {
   const placeholder = 'Название';
-  return <StyledInput placeholder={placeholder} type="search" />;
+
+  return (
+    <StyledInput
+      placeholder={placeholder}
+      type="search"
+      onChange={(e) => onSearch(e.target.value)}
+      onSearch={onSearch}
+      allowClear
+      value={value}
+    />
+  );
 }
