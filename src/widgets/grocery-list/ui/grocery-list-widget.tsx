@@ -5,6 +5,7 @@ import { GroceryListHeader } from './grocery-list-header';
 import { GroceryListContent } from './grocery-list-content';
 import { GroceryListActions } from './grocery-list-actions';
 import toast from 'react-hot-toast';
+import { GroceryCardContent } from './grocery-card-content';
 
 interface GroceryListWidgetProps {
   statusFilter?: 'need_buying' | 'bought';
@@ -21,6 +22,12 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
     updateItemsStatus,
   } = useGroceries();
 
+  // Get initial view mode from localStorage or default to 'list'
+  const getInitialViewMode = (): 'list' | 'card' => {
+    const savedMode = localStorage.getItem('groceryViewMode');
+    return savedMode === 'list' || savedMode === 'card' ? savedMode : 'list';
+  };
+
   const [removingItems, setRemovingItems] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -28,6 +35,8 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useState<'list' | 'card'>(getInitialViewMode);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   const filteredGroceries = useMemo(
     () =>
@@ -80,6 +89,21 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
     setIsEditModalOpen(true);
   };
 
+  const handleCardNavigation = (direction: 'next' | 'prev') => {
+    if (direction === 'next') {
+      setCurrentCardIndex((prev) =>
+        prev < filteredGroceries.length - 1 ? prev + 1 : prev,
+      );
+    } else {
+      setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    }
+  };
+
+  const handleViewModeChange = (newMode: 'list' | 'card') => {
+    setViewMode(newMode);
+    localStorage.setItem('groceryViewMode', newMode);
+  };
+
   return (
     <div style={{ maxWidth: '100%' }}>
       {error && (
@@ -92,17 +116,33 @@ export function GroceryListWidget({ statusFilter }: GroceryListWidgetProps) {
         onCategoryChange={setSelectedCategories}
         onTagsChange={setSelectedTags}
         onAddClick={() => setIsAddModalOpen(true)}
+        viewMode={viewMode}
+        onViewModeChange={handleViewModeChange}
       />
 
-      <GroceryListContent
-        isLoading={isLoading}
-        items={filteredGroceries}
-        selectedItems={selectedItems}
-        removingItems={removingItems}
-        onToggle={toggleItemSelection}
-        onDelete={fetchGroceries}
-        onEditClick={handleEditClick}
-      />
+      {viewMode === 'list' ? (
+        <GroceryListContent
+          isLoading={isLoading}
+          items={filteredGroceries}
+          selectedItems={selectedItems}
+          removingItems={removingItems}
+          onToggle={toggleItemSelection}
+          onDelete={fetchGroceries}
+          onEditClick={handleEditClick}
+        />
+      ) : (
+        <GroceryCardContent
+          isLoading={isLoading}
+          items={filteredGroceries}
+          currentIndex={currentCardIndex}
+          selectedItems={selectedItems}
+          removingItems={removingItems}
+          onToggle={toggleItemSelection}
+          onDelete={fetchGroceries}
+          onEditClick={handleEditClick}
+          onNavigate={handleCardNavigation}
+        />
+      )}
 
       <GroceryListActions
         statusFilter={statusFilter!}
