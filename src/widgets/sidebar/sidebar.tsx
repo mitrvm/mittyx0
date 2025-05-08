@@ -9,7 +9,7 @@ import {
   ShoppingCartOutlined,
   ContainerOutlined,
   TagsOutlined,
-  BarChartOutlined,
+  // BarChartOutlined,
 } from '@ant-design/icons';
 import { useTheme } from '~entities/contexts/theme-context';
 import { useSidebar } from '~entities/contexts/sidebar-context';
@@ -122,7 +122,7 @@ export function Sidebar() {
                 to={pathKeys.dashboard.itemsAtHome.root()}
                 style={getLinkStyle(pathKeys.dashboard.itemsAtHome.root())}
               >
-                Холодильник
+                Купленное
               </Link>
             </Menu.Item>
             <Menu.Item
@@ -148,7 +148,7 @@ export function Sidebar() {
                 Тэги, Категории
               </Link>
             </Menu.Item>
-            <Menu.Item
+            {/* <Menu.Item
               key="3"
               style={getMenuItemStyle(pathKeys.dashboard.stats.root())}
               icon={
@@ -164,7 +164,7 @@ export function Sidebar() {
               >
                 Статистика
               </Link>
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu>
         </div>
 

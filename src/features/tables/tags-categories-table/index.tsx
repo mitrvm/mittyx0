@@ -9,6 +9,7 @@ import { AddGrouperModal } from '~features/groupers/ui/add-grouper-modal';
 import { EditableCell } from './ui/editable-cell';
 import { ActionButtons } from './ui/action-buttons';
 import { TableProps } from './model/types';
+import { isLightColor } from '~shared/utils';
 
 export function TagsCategoriesTable({ type, data, onEdit }: TableProps) {
   const [form] = Form.useForm();
@@ -82,7 +83,7 @@ export function TagsCategoriesTable({ type, data, onEdit }: TableProps) {
           key={`${record.id}-${record.color}`}
           color={record.color}
           style={{
-            color: record.color === '#ffffff' ? '#000000' : undefined,
+            color: isLightColor(record.color) ? '#000000' : undefined,
             border: record.color === '#ffffff' ? '1px solid #ccc' : 'none',
           }}
         >

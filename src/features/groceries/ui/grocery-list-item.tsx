@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useTheme } from '~entities/contexts/theme-context';
 import { useGroceries } from '~entities/groceries';
 import toast from 'react-hot-toast';
+import { isLightColor } from '~shared/utils';
 
 const GroceryItemWrapper = styled.div`
   transition: all 0.3s ease-in-out;
@@ -128,18 +129,21 @@ export function GroceryListItem({
               gap: '4px',
             }}
           >
-            {item.tags.map((tag) => (
-              <Tag
-                key={`${item.id}-${tag.name}`}
-                color={tag.color}
-                style={{
-                  color: tag.color === '#ffffff' ? '#000000' : undefined,
-                  border: tag.color === '#ffffff' ? '1px solid #ccc' : 'none',
-                }}
-              >
-                {tag.name}
-              </Tag>
-            ))}
+            {item.tags.map((tag) => {
+              const light = isLightColor(tag.color);
+              return (
+                <Tag
+                  key={`${item.id}-${tag.name}`}
+                  color={tag.color}
+                  style={{
+                    color: light ? '#000000' : '#ffffff',
+                    border: tag.color === '#ffffff' ? '1px solid #ccc' : 'none',
+                  }}
+                >
+                  {tag.name}
+                </Tag>
+              );
+            })}
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignSelf: 'center' }}>
