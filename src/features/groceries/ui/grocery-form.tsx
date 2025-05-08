@@ -34,13 +34,15 @@ export function GroceryForm({
   onAddCategory,
   onAddTag,
 }: GroceryFormProps) {
-  const { tags } = useTags();
-  const { categories } = useCategories();
+  const { tags, fetchTags } = useTags();
+  const { categories, fetchCategories } = useCategories();
   const { groceries, fetchGroceries } = useGroceries();
   const [similarItems, setSimilarItems] = useState<string[]>([]);
 
   useEffect(() => {
     fetchGroceries();
+    fetchTags();
+    fetchCategories();
   }, []);
 
   const categoryDropdownRender = createDropdownRender(
