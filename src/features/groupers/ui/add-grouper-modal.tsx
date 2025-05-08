@@ -11,9 +11,10 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   type: 'tag' | 'category';
+  onSuccess?: () => void;
 }
 
-export function AddGrouperModal({ isOpen, onClose, type }: Props) {
+export function AddGrouperModal({ isOpen, onClose, type, onSuccess }: Props) {
   const [form] = Form.useForm<AddGroceryFormData>();
   const { createTag } = useTags();
   const { createCategory } = useCategories();
@@ -38,6 +39,7 @@ export function AddGrouperModal({ isOpen, onClose, type }: Props) {
       toast.success(type === 'tag' ? 'Тэг добавлен.' : 'Категория добавлена.');
       form.resetFields();
       onClose();
+      onSuccess?.();
     } catch (error) {
       toast.error('Ошибка!! :(');
     }

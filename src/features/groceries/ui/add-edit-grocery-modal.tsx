@@ -1,19 +1,11 @@
-import { Modal, Form, Input, Select, Button } from 'antd';
+import { Modal, Button } from 'antd';
 import { toast } from 'react-hot-toast';
 import { useGroceries } from '~entities/groceries/groceries.queries';
 import React, { useEffect } from 'react';
-import { useTags } from '~entities/groupers/groupers.queries';
-import { useCategories } from '~entities/groupers/groupers.queries';
-
-interface AddGroceryFormData {
-  id?: number;
-  name: string;
-  category: number;
-  tags: number[];
-  priority: number | undefined;
-}
-
-type ModalType = 'add' | 'edit';
+import { useTags, useCategories } from '~entities/groupers/groupers.queries';
+import { AddGrouperModal } from '~features/groupers/ui/add-grouper-modal';
+import { Form } from 'antd';
+import { GroceryForm, AddGroceryFormData, ModalType } from './grocery-form';
 
 interface Props {
   isOpen: boolean;
@@ -30,16 +22,20 @@ export function AddEditGroceryModal({
 }: Props) {
   const [form] = Form.useForm<AddGroceryFormData>();
   const { createGrocery, editGrocery } = useGroceries();
+  const { fetchTags } = useTags();
+  const { fetchCategories } = useCategories();
 
-  const { tags, fetchTags } = useTags();
-  const { categories, fetchCategories } = useCategories();
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = React.useState(false);
+  const [isAddTagOpen, setIsAddTagOpen] = React.useState(false);
+  const [isCategorySelectOpen, setIsCategorySelectOpen] = React.useState(false);
+  const [isTagSelectOpen, setIsTagSelectOpen] = React.useState(false);
 
   useEffect(() => {
     fetchTags();
     fetchCategories();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (type === 'edit' && initialData) {
       form.setFieldsValue(initialData);
     }
@@ -75,63 +71,66 @@ export function AddEditGroceryModal({
     }
   };
 
-  return (
-    <Modal
-      title={type === 'add' ? 'Добавить новый товар' : 'Изменить товар'}
-      open={isOpen}
-      onCancel={onClose}
-      footer={[
-        <Button key="cancel" onClick={onClose}>
-          Отменить
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={handleSubmit}
-          style={{ backgroundColor: '#67A654' }}
-        >
-          {type === 'add' ? 'Добавить' : 'Изменить'}
-        </Button>,
-      ]}
-    >
-      <Form form={form} layout="vertical" initialValues={{ tags: [] }}>
-        <Form.Item
-          name="name"
-          label="Название товара"
-          rules={[{ required: true, message: 'Обязательное поле' }]}
-        >
-          <Input placeholder="Введите название товара" />
-        </Form.Item>
-        <Form.Item
-          name="category"
-          label="Категория"
-          rules={[{ required: true, message: 'Обязательное поле' }]}
-        >
-          <Select placeholder="Выберите категорию">
-            {categories.map((category) => (
-              <Select.Option key={category.id} value={category.id}>
-                {category.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+  const handleAddCategory = React.useCallback(() => {
+    setIsAddCategoryOpen(true);
+    setIsCategorySelectOpen(false);
+  }, []);
 
-        <Form.Item name="tags" label="Теги">
-          <Select placeholder="Выберите теги" allowClear mode="multiple">
-            {tags.map((tag) => (
-              <Select.Option key={tag.id} value={tag.id}>
-                {tag.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item name="priority" label="Приоритет %">
-          <Input
-            type="number"
-            placeholder="Введите необходимость товара (От 1 до 100)"
-          />
-        </Form.Item>
-      </Form>
-    </Modal>
+  const handleAddTag = React.useCallback(() => {
+    setIsAddTagOpen(true);
+    setIsTagSelectOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Modal
+        title={type === 'add' ? 'Добавить новый товар' : 'Изменить товар'}
+        open={isOpen}
+        onCancel={onClose}
+        footer={[
+          <Button key="cancel" onClick={onClose}>
+            Отменить
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSubmit}
+            style={{ backgroundColor: '#67A654' }}
+          >
+            {type === 'add' ? 'Добавить' : 'Изменить'}
+          </Button>,
+        ]}
+      >
+        <GroceryForm
+          form={form}
+          isCategorySelectOpen={isCategorySelectOpen}
+          isTagSelectOpen={isTagSelectOpen}
+          setIsCategorySelectOpen={setIsCategorySelectOpen}
+          setIsTagSelectOpen={setIsTagSelectOpen}
+          onAddCategory={handleAddCategory}
+          onAddTag={handleAddTag}
+        />
+      </Modal>
+
+      <AddGrouperModal
+        isOpen={isAddCategoryOpen}
+        onClose={() => setIsAddCategoryOpen(false)}
+        type="category"
+        onSuccess={() => {
+          setIsAddCategoryOpen(false);
+          fetchCategories();
+        }}
+      />
+
+      <AddGrouperModal
+        isOpen={isAddTagOpen}
+        onClose={() => setIsAddTagOpen(false)}
+        type="tag"
+        onSuccess={() => {
+          setIsAddTagOpen(false);
+          fetchTags();
+        }}
+      />
+    </>
   );
 }

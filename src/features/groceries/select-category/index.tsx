@@ -32,8 +32,12 @@ export function SelectCategory({
         label: category.name,
         value: category.id,
       }))}
+      filterOption={(input, option) =>
+        option!.label!.toString().toLowerCase().includes(input.toLowerCase())
+      }
       onChange={(values) => onChange(values as number[])}
       allowClear
+      maxTagCount={1}
     />
   );
 }

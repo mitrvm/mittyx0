@@ -28,12 +28,13 @@ export function SelectTags({
     <StyledSelect
       placeholder={placeholder}
       mode="multiple"
-      options={tags.map((tag: any) => ({
-        label: tag.name,
-        value: tag.id,
-      }))}
+      filterOption={(input, option) =>
+        option!.label!.toString().toLowerCase().includes(input.toLowerCase())
+      }
+      options={tags.map((tag) => ({ label: tag.name, value: tag.id }))}
       onChange={(values) => onChange(values as number[])}
       allowClear
+      maxTagCount={1}
     />
   );
 }
